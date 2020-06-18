@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/ariefsam/go-rest-api-proxy/entity"
@@ -16,25 +17,28 @@ func (u *Usecase) Request(param entity.Parameter) (resp entity.Response, err err
 	}
 	request, err := http.NewRequest(param.Method, param.URL, bytes.NewReader(jsonReq))
 	for _, val := range param.Headers {
-		if _, ok := request.Header[val.Key]; !ok {
-			request.Header[val.Key] = []string{val.Value}
-		} else {
-			request.Header[val.Key] = append(request.Header[val.Key], val.Value)
+		for k, v := range val {
+			if _, ok := request.Header[k]; !ok {
+				request.Header[k] = []string{v}
+			} else {
+				request.Header[k] = append(request.Header[k], v)
+			}
 		}
 	}
 	if err != nil {
 		return
 	}
 	response, err := u.HTTPClient.Do(request)
+
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	resp.StatusCode = response.StatusCode
+	// log.Printf("%+v", response.Header)
 	for key, val := range response.Header {
 		for _, v := range val {
-			var header entity.Header
-			header.Key = key
-			header.Value = v
+			header := entity.Header{key: v}
 			resp.Headers = append(resp.Headers, header)
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"testing"
 
@@ -13,17 +14,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
 func TestRequest(t *testing.T) {
 	var u usecase.Usecase
 	parameter := entity.Parameter{
 		Headers: []entity.Header{
 			entity.Header{
-				Key:   "k1",
-				Value: "v1",
+				"k1": "v1",
 			},
 			entity.Header{
-				Key:   "k2",
-				Value: "v2",
+				"k2": "v2",
 			},
 		},
 		Method: "POST",
@@ -37,8 +40,7 @@ func TestRequest(t *testing.T) {
 		Error: "",
 		Headers: []entity.Header{
 			entity.Header{
-				Key:   "respHeaderKey",
-				Value: "respHeaderVal",
+				"respHeaderKey": "respHeaderVal",
 			},
 		},
 		Body: map[string]interface{}{
@@ -53,13 +55,13 @@ func TestRequest(t *testing.T) {
 
 	httpRequest, err := http.NewRequest(parameter.Method, parameter.URL, bytes.NewReader(jsonReq))
 	httpRequest.Header = http.Header{
-		parameter.Headers[0].Key: []string{parameter.Headers[0].Value},
-		parameter.Headers[1].Key: []string{parameter.Headers[1].Value},
+		parameter.Headers[0]["k1"]: []string{parameter.Headers[0]["v1"]},
+		parameter.Headers[1]["k2"]: []string{parameter.Headers[1]["v2"]},
 	}
 	assert.NoError(t, err)
 	httpResponse := http.Response{
 		Header: http.Header{
-			expectedResponse.Headers[0].Key: []string{expectedResponse.Headers[0].Value},
+			"respHeaderKey": []string{"respHeaderVal"},
 		},
 		StatusCode: http.StatusOK,
 		Body:       ioutil.NopCloser(bytes.NewReader(jsonResp)),

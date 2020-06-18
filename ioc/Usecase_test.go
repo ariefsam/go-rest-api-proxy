@@ -10,6 +10,6 @@ import (
 
 func TestUsecase(t *testing.T) {
 	var u usecase.Usecase
-	u = ioc.UseCase()
+	u = ioc.Usecase()
 	assert.NotNil(t, u.HTTPClient)
 }

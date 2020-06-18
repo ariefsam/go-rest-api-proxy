@@ -6,7 +6,7 @@ import (
 	"github.com/ariefsam/go-rest-api-proxy/usecase"
 )
 
-func UseCase() (u usecase.Usecase) {
+func Usecase() (u usecase.Usecase) {
 	u.HTTPClient = &http.Client{}
 	return
 }
