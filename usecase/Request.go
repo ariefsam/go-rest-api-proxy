@@ -29,6 +29,7 @@ func (u *Usecase) Request(param entity.Parameter) (resp entity.Response, err err
 	if err != nil {
 		return
 	}
+	resp.StatusCode = response.StatusCode
 	for key, val := range response.Header {
 		for _, v := range val {
 			var header entity.Header

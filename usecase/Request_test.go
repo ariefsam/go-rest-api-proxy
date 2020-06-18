@@ -45,6 +45,7 @@ func TestRequest(t *testing.T) {
 			"respKey1": "respBody1",
 			"respKey2": "respBody2",
 		},
+		StatusCode: http.StatusOK,
 	}
 
 	jsonReq, _ := json.Marshal(parameter.Body)
@@ -60,7 +61,8 @@ func TestRequest(t *testing.T) {
 		Header: http.Header{
 			expectedResponse.Headers[0].Key: []string{expectedResponse.Headers[0].Value},
 		},
-		Body: ioutil.NopCloser(bytes.NewReader(jsonResp)),
+		StatusCode: http.StatusOK,
+		Body:       ioutil.NopCloser(bytes.NewReader(jsonResp)),
 	}
 
 	var mockHTTPClient mockdependency.HTTPClient
@@ -71,6 +73,7 @@ func TestRequest(t *testing.T) {
 	resp, err := u.Request(parameter)
 	assert.Equal(t, httpRequest.Method, mockHTTPClient.CalledDoRequest[0].Method)
 	assert.Equal(t, httpRequest.URL, mockHTTPClient.CalledDoRequest[0].URL)
+	assert.Equal(t, httpRequest.Body, mockHTTPClient.CalledDoRequest[0].Body)
 	assert.NoError(t, err)
 
 	assert.Equal(t, expectedResponse, resp)
